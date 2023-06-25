@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuji.dao.mapper.customerorders.CustomerOrdersMapper">
+
+	<select id="getCustomerOrderId" resultType="int">
+		SELECT  IFNULL(MIN(ID + 1), 1) AS ID
+        FROM (
+			SELECT ID FROM kuji_prod.CUSTOMER_ORDER
+			UNION
+			SELECT 0 WHERE (SELECT COUNT(ID) FROM kuji_prod.CUSTOMER_ORDER WHERE ID = 1) = 0
+		) AS CUSTOMER_ORDER
+        WHERE   (ID + 1) NOT IN (SELECT ID FROM kuji_prod.CUSTOMER_ORDER)
+	</select>
+
+	<select id="getCustomerOrders" resultType="com.kuji.entity.CustomerOrder">
+		SELECT  *
+		FROM    kuji_prod.CUSTOMER_ORDER
+	</select>
+
+	<insert id="addCustomerOrder">
+		INSERT  INTO kuji_prod.CUSTOMER_ORDER
+		VALUES  (#{id}, #{division}, #{seat_group}, #{name}, #{drink})
+	</insert>
+
+	<update id="updateCustomerOrder">
+		UPDATE kuji_prod.CUSTOMER_ORDER SET
+			DIVISION   = #{division},
+			SEAT_GROUP = #{seat_group},
+			NAME       = #{name},
+			DRINK      = #{drink}
+			WHERE ID   = #{id}
+	</update>
+
+	<delete id="deleteCustomerOrder">
+		DELETE  FROM kuji_prod.CUSTOMER_ORDER
+		WHERE   ID = #{id}
+	</delete>
+	
+</mapper>
